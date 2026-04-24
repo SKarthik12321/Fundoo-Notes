@@ -4,6 +4,7 @@ import com.fundoonotes.dto.request.NoteRequestDto;
 import com.fundoonotes.dto.response.NoteResponseDto;
 import com.fundoonotes.entity.Note;
 import com.fundoonotes.entity.User;
+import com.fundoonotes.exception.NoteNotFoundException;
 import com.fundoonotes.exception.UserNotFoundException;
 import com.fundoonotes.repository.NoteRepository;
 import com.fundoonotes.repository.UserRepository;
@@ -59,8 +60,39 @@ public class NoteServiceImpl implements NoteService {
         User user = getUserFromToken(token);
         List<Note> notes = noteRepository.findByUserIdAndArchivedFalseAndTrashedFalse(user.getId());
         log.info("Found {} notes for user id: {}", notes.size(), user.getId());
-        return notes.stream()
-                .map(note -> mapToResponse(note, "Success"))
-                .collect(Collectors.toList());
+        return notes.stream().map(note -> mapToResponse(note, "Success")).collect(Collectors.toList());
+    }
+
+    @Override
+    public NoteResponseDto togglePin(Long noteId, String token) {
+        log.info("Toggling pin for note id: {}", noteId);
+        User user = getUserFromToken(token);
+        Note note = noteRepository.findByIdAndUserId(noteId, user.getId())
+                .orElseThrow(() -> new NoteNotFoundException("Note not found with id: " + noteId));
+        note.setPinned(!note.isPinned());
+        Note saved = noteRepository.save(note);
+        return mapToResponse(saved, "Pin toggled to " + saved.isPinned());
+    }
+
+    @Override
+    public NoteResponseDto toggleArchive(Long noteId, String token) {
+        log.info("Toggling archive for note id: {}", noteId);
+        User user = getUserFromToken(token);
+        Note note = noteRepository.findByIdAndUserId(noteId, user.getId())
+                .orElseThrow(() -> new NoteNotFoundException("Note not found with id: " + noteId));
+        note.setArchived(!note.isArchived());
+        Note saved = noteRepository.save(note);
+        return mapToResponse(saved, "Archive toggled to " + saved.isArchived());
+    }
+
+    @Override
+    public NoteResponseDto toggleTrash(Long noteId, String token) {
+        log.info("Toggling trash for note id: {}", noteId);
+        User user = getUserFromToken(token);
+        Note note = noteRepository.findByIdAndUserId(noteId, user.getId())
+                .orElseThrow(() -> new NoteNotFoundException("Note not found with id: " + noteId));
+        note.setTrashed(!note.isTrashed());
+        Note saved = noteRepository.save(note);
+        return mapToResponse(saved, "Trash toggled to " + saved.isTrashed());
     }
 }

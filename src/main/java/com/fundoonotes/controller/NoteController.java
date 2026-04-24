@@ -29,4 +29,25 @@ public class NoteController {
             @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(noteService.getAllNotes(token));
     }
+
+    @PutMapping("/{noteId}/pin")
+    public ResponseEntity<NoteResponseDto> togglePin(
+            @PathVariable Long noteId,
+            @RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(noteService.togglePin(noteId, token));
+    }
+
+    @PutMapping("/{noteId}/archive")
+    public ResponseEntity<NoteResponseDto> toggleArchive(
+            @PathVariable Long noteId,
+            @RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(noteService.toggleArchive(noteId, token));
+    }
+
+    @PutMapping("/{noteId}/trash")
+    public ResponseEntity<NoteResponseDto> toggleTrash(
+            @PathVariable Long noteId,
+            @RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(noteService.toggleTrash(noteId, token));
+    }
 }
