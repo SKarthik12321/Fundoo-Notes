@@ -1,4 +1,4 @@
-#  Fundoo-Notes Backend
+# 🗒️ Fundoo-Notes Backend
 
 A production-style **Spring Boot 3** REST API backend built using a strict **Use-Case (UC) driven Git workflow**.
 
@@ -6,18 +6,22 @@ A production-style **Spring Boot 3** REST API backend built using a strict **Use
 
 ---
 
-##  Architecture
+## 🏗️ Architecture
 
 Every API request flows through a clean layered pipeline:
+
 Client ──► Controller ──► DTO ──► Service ──► Repository ──► MySQL
-↕
-Security / JWT Filter
-↕
-Global Exception Handler
+                                     ↕
+                             Security / JWT Filter
+                                     ↕
+                          Global Exception Handler
+                                     ↕
+                            AOP Logging Aspect
 
 ---
 
-##  Package Structure
+## 📦 Package Structure
+
 com.fundoonotes
 ├── config          → Security & AOP configuration
 ├── controller      → REST endpoints
@@ -31,7 +35,7 @@ com.fundoonotes
 
 ---
 
-## ✅ Phase 1 — Completed Use Cases (UC1–UC10)
+## ✅ Phase 1 — Completed Use Cases (UC1–UC11)
 
 | UC | Title | What Was Built |
 |----|-------|---------------|
@@ -45,10 +49,11 @@ com.fundoonotes
 | UC8 | Create Note | Authenticated POST /api/notes — user identity extracted from JWT Principal |
 | UC9 | Get Notes | IDOR-safe GET /api/notes returning only the authenticated user's notes |
 | UC10 | Toggle APIs | Stateless PUT endpoints for pin, archive, and trash flag flipping |
+| UC11 | AOP Logging | Centralized aspect intercepting all service methods for logging and execution time tracking |
 
 ---
 
-##  Security Design
+## 🔐 Security Design
 
 - Passwords are never stored in plain text — BCryptPasswordEncoder handles hashing
 - JWT tokens are issued on login and validated on every secured request via the filter chain
@@ -57,21 +62,21 @@ com.fundoonotes
 
 ---
 
-##  Branch Strategy
+## 🌿 Branch Strategy
+
 main        → documentation only
 develop     → integration branch (all UCs merged here)
 feature/UC* → one branch per use case, merged after completion
 
 ---
 
-##  Phase 2 — Upcoming
+## 🚀 Phase 2 — Upcoming
 
 - Label / tagging system for note organisation
 - Reminder scheduling with notification support
 
 ---
 
-##  Tech Stack
+## 🛠️ Tech Stack
 
-Java 17 · Spring Boot 3 · Spring Security · JWT (jjwt 0.11.5) · Spring Data JPA · MySQL · Lombok · Maven
-
+Java 17 · Spring Boot 3 · Spring Security · JWT (jjwt 0.11.5) · Spring Data JPA · MySQL · Lombok · Maven · Spring AOP
