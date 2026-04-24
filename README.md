@@ -1,23 +1,77 @@
-# Fundoo-Notes
+#  Fundoo-Notes Backend
 
-This project is being developed using a strict Use-Case (UC) driven approach. It features a completely isolated `main` branch (for documentation only) and a rigidly managed `develop` branch for code integration.
+A production-style **Spring Boot 3** REST API backend built using a strict **Use-Case (UC) driven Git workflow**.
 
-All APIs are built adhering to the core layered architectural pattern: **Client → Controller → DTO → Service → Repository → Database**
+> Each feature lives in its own isolated feature branch and is merged into `develop` only after completion. The `main` branch is reserved purely for documentation.
 
-## ✅ Phase 1 Implemented Features (UC1 - UC10)
+---
 
-1. **UC1: Setup & Packages** - Built the foundational Spring Boot 3 structure enforcing rigid separation of concerns.
-2. **UC2: Database Connectivity** - Configured MySQL connectivity and dynamic Hibernate DDL updates via application.yml.
-3. **UC3: User Persistence** - Modelled the JPA User Entity and built out the abstract UserRepository.
-4. **UC4: User Registration** - Engineered the Registration payload using rigid DTOs (@Valid) and a GlobalExceptionHandler allowing standard JSON error passing.
-5. **UC5: Authentication** - Hardened database passwords using BCryptPasswordEncoder and configured dynamic JSON Web Token (JWT) issuing on Login.
-6. **UC6: JWT Validation Pipeline** - Secured the microservice by building a JwtAuthenticationFilter (Bouncer) to intercept and parse headers, isolating the overall Spring Security Context.
-7. **UC7: Note Entity Mapping** - Orchestrated the Note layer implementing decoupled Foreign Keys (Long userId) to evade recursion bugs and maximize efficiency, and set up state-flags (isPinned, etc.).
-8. **UC8: Note Creation** - Devised a safe POST endpoint extracting the Principal JWT identity seamlessly to ensure a user can only create notes mapped directly to themselves.
-9. **UC9: Note Dashboard Fetch** - Crafted a robust GET API fetching List<Note> mapped to the user, strictly protecting against IDOR attacks stringently handled automatically via the security context.
-10. **UC10: Toggle Controllers** - Developed stateless PUT APIs enabling frontend clients to flip boolean flags for Pin, Archive, and Trash behaviors safely.
+##  Architecture
 
-## 🚀 Upcoming Phases (Phase 2)
+Every API request flows through a clean layered pipeline:
+Client ──► Controller ──► DTO ──► Service ──► Repository ──► MySQL
+↕
+Security / JWT Filter
+↕
+Global Exception Handler
 
-- Implementing Labeling system for generic tagging.
-- Reminders scheduling framework.
+---
+
+##  Package Structure
+com.fundoonotes
+├── config          → Security & AOP configuration
+├── controller      → REST endpoints
+├── dto             → Request and Response objects
+├── entity          → JPA mapped database models
+├── exception       → Custom exceptions + global handler
+├── repository      → Spring Data JPA interfaces
+├── security        → JWT filter pipeline
+├── service/impl    → Business logic layer
+└── util            → Token utility
+
+---
+
+## ✅ Phase 1 — Completed Use Cases (UC1–UC10)
+
+| UC | Title | What Was Built |
+|----|-------|---------------|
+| UC1 | Project Setup | Spring Boot 3 scaffold with strict package separation |
+| UC2 | Database Config | MySQL + Hibernate DDL via application.yml |
+| UC3 | User Persistence | JPA User entity + UserRepository with email lookup |
+| UC4 | User Registration | Validated DTOs + GlobalExceptionHandler with structured JSON errors |
+| UC5 | Login & JWT | BCryptPasswordEncoder + JWT token generation on successful login |
+| UC6 | JWT Validation | JwtAuthenticationFilter bouncer intercepting every secured request |
+| UC7 | Note Entity | Note JPA model with decoupled user_id FK and state flags |
+| UC8 | Create Note | Authenticated POST /api/notes — user identity extracted from JWT Principal |
+| UC9 | Get Notes | IDOR-safe GET /api/notes returning only the authenticated user's notes |
+| UC10 | Toggle APIs | Stateless PUT endpoints for pin, archive, and trash flag flipping |
+
+---
+
+##  Security Design
+
+- Passwords are never stored in plain text — BCryptPasswordEncoder handles hashing
+- JWT tokens are issued on login and validated on every secured request via the filter chain
+- Spring Security context is populated from the token — no session, fully stateless
+- IDOR attacks are prevented by always scoping data queries to the authenticated user's ID
+
+---
+
+##  Branch Strategy
+main        → documentation only
+develop     → integration branch (all UCs merged here)
+feature/UC* → one branch per use case, merged after completion
+
+---
+
+##  Phase 2 — Upcoming
+
+- Label / tagging system for note organisation
+- Reminder scheduling with notification support
+
+---
+
+##  Tech Stack
+
+Java 17 · Spring Boot 3 · Spring Security · JWT (jjwt 0.11.5) · Spring Data JPA · MySQL · Lombok · Maven
+
