@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,5 +51,16 @@ public class NoteServiceImpl implements NoteService {
         Note saved = noteRepository.save(note);
         log.info("Note created with id: {}", saved.getId());
         return mapToResponse(saved, "Note created successfully");
+    }
+
+    @Override
+    public List<NoteResponseDto> getAllNotes(String token) {
+        log.info("Fetching all notes for user");
+        User user = getUserFromToken(token);
+        List<Note> notes = noteRepository.findByUserIdAndArchivedFalseAndTrashedFalse(user.getId());
+        log.info("Found {} notes for user id: {}", notes.size(), user.getId());
+        return notes.stream()
+                .map(note -> mapToResponse(note, "Success"))
+                .collect(Collectors.toList());
     }
 }

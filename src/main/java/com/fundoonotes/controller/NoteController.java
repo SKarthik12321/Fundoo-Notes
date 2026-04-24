@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/notes")
@@ -21,5 +22,11 @@ public class NoteController {
             @Valid @RequestBody NoteRequestDto requestDto,
             @RequestHeader("Authorization") String token) {
         return ResponseEntity.status(HttpStatus.CREATED).body(noteService.createNote(requestDto, token));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<NoteResponseDto>> getAllNotes(
+            @RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(noteService.getAllNotes(token));
     }
 }
